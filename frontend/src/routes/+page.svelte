@@ -6,17 +6,34 @@
 
 	let todos = $state<Todo[]>([]);
 	let error = $state<string | null>(null);
+	let name = $state('');
 
 	async function getAllTodos() {
 		const response = await fetch('/api/todos');
 		const data = await response.json();
-		console.log(data);
 		if (!response.ok) {
-			console.error('Unauthenticated');
 			error = data.error;
 			return;
 		}
 		todos = data;
+	}
+
+	async function saveTodo() {
+		const body = JSON.stringify({ name });
+		const response = await fetch('/api/todos', {
+			method: 'POST',
+			body: body,
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			error = data.error;
+			return;
+		}
+
+		todos = [...todos, data];
 	}
 </script>
 
@@ -27,7 +44,9 @@
 	<p class="text-red-500">{error}</p>
 {/if}
 
-<p><button onclick={getAllTodos}>Get all Todos</button></p>
+<div><button onclick={getAllTodos}>Get all Todos</button></div>
+
+<div><input type="text" bind:value={name} /> <button onclick={saveTodo}>Save</button></div>
 
 <ul>
 	{#each todos as todo, i (i)}

@@ -13,5 +13,5 @@ func NewTodo(name string) Todo {
 }
 
 type CreateTodo struct {
-	Name string
+	Name string `json:"name"`
 }
