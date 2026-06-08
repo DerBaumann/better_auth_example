@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"better_auth_example/internal/todo"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -12,6 +14,9 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
+
+	todoHandler := todo.NewHandler()
+
 	r.Use(middleware.Logger)
 
 	r.Use(cors.Handler(cors.Options{
@@ -25,6 +30,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Get("/", s.HelloWorldHandler)
 
 	r.Get("/health", s.healthHandler)
+
+	r.Mount("/todos", todoHandler.NewRouter())
 
 	return r
 }
